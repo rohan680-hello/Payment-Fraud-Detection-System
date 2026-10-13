@@ -1,0 +1,14 @@
+# Python environment and cache
+.venv/
+__pycache__/
+*.py[cod]
+
+# Local data and generated model artifacts
+data/creditcard.csv
+models/
+
+# Editor and operating-system files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,46 @@
+{
+  "validation_average_precision": {
+    "Logistic Regression": 0.6922959425189619,
+    "XGBoost": 0.7821594257639747
+  },
+  "selected_model": "XGBoost",
+  "threshold": 0.9589285254478455,
+  "test_average_precision": 0.843592057431207,
+  "classification_report": {
+    "0": {
+      "precision": 0.9996470110662031,
+      "recall": 0.9997881767312139,
+      "f1-score": 0.9997175889153649,
+      "support": 56651.0
+    },
+    "1": {
+      "precision": 0.8620689655172413,
+      "recall": 0.7894736842105263,
+      "f1-score": 0.8241758241758241,
+      "support": 95.0
+    },
+    "accuracy": 0.9994360836006062,
+    "macro avg": {
+      "precision": 0.9308579882917223,
+      "recall": 0.8946309304708702,
+      "f1-score": 0.9119467065455945,
+      "support": 56746.0
+    },
+    "weighted avg": {
+      "precision": 0.9994166879715859,
+      "recall": 0.9994360836006062,
+      "f1-score": 0.9994237097406168,
+      "support": 56746.0
+    }
+  },
+  "confusion_matrix": [
+    [
+      56639,
+      12
+    ],
+    [
+      20,
+      75
+    ]
+  ]
+}
