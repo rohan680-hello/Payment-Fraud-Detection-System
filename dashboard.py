@@ -54,21 +54,39 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+def normalize_api_url(url: str) -> str:
+    """Ensure the API URL has a valid scheme and domain format."""
+    cleaned = (url or "").strip().rstrip("/")
+    if not cleaned:
+        return "http://127.0.0.1:8000"
+    if cleaned.startswith(("http://", "https://")):
+        return cleaned
+    if "localhost" in cleaned or "127.0.0.1" in cleaned:
+        return f"http://{cleaned}"
+    if "." in cleaned:
+        return f"https://{cleaned}"
+    # Bare service name (e.g. 'payment-fraud-api' from Render Blueprint host property)
+    return f"https://{cleaned}.onrender.com"
+
 # Read backend URL from environment variable, falling back to localhost
-DEFAULT_API_URL = os.getenv("API_URL", "http://127.0.0.1:8000").rstrip("/")
+raw_default_url = os.getenv("API_URL", "http://127.0.0.1:8000")
+DEFAULT_API_URL = normalize_api_url(raw_default_url)
 
 # Sidebar configuration
 st.sidebar.header("⚙️ Backend Service")
 api_url_input = st.sidebar.text_input(
     "FastAPI Base URL",
     value=DEFAULT_API_URL,
-    help="Configured via API_URL environment variable. Can be adjusted for testing.",
+    help="Enter full URL with https:// or http://, e.g. https://payment-fraud-api.onrender.com",
 )
-api_url = api_url_input.strip().rstrip("/")
+api_url = normalize_api_url(api_url_input)
+if api_url != api_url_input.strip().rstrip("/"):
+    st.sidebar.caption(f"Resolved endpoint: `{api_url}`")
 
 # Backend Health Check utility
 def check_backend_health(url: str):
-    health_endpoint = f"{url}/health"
+    target = normalize_api_url(url)
+    health_endpoint = f"{target}/health"
     try:
         response = requests.get(health_endpoint, timeout=6)
         if response.status_code == 200:
@@ -321,6 +339,11 @@ with col_results:
                         "⏱️ **Backend Request Timed Out:** The backend took longer than 10 seconds to respond.\n\n"
                         "- Render free instances sleep after inactivity and take 30-60 seconds to boot up on initial request.\n"
                         "- Please wait a moment and retry."
+                    )
+                except (requests.exceptions.MissingSchema, requests.exceptions.InvalidURL):
+                    st.error(
+                        f"⚠️ **Invalid Backend URL format:** `{api_url}`\n\n"
+                        "Please enter a valid HTTP/HTTPS URL in the sidebar (e.g. `https://payment-fraud-api.onrender.com`)."
                     )
                 except Exception as exc:
                     st.error(f"Unexpected error when communicating with backend: {exc}")
