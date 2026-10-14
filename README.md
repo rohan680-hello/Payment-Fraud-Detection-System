@@ -6,12 +6,16 @@ A machine-learning project that identifies potentially fraudulent card transacti
 
 ```
 data/creditcard.csv        Transaction dataset (not included in source control)
-models/fraud_model.joblib  Saved selected model, feature list, and threshold
+models/fraud_model.joblib  Saved selected model, feature list, and threshold (tracked for deployment)
 train.py                   Training, validation, testing, and artifact creation
 app.py                     FastAPI prediction service
-check_data.py              Basic dataset quality checks
+dashboard.py               Streamlit interactive dashboard for transaction scoring
+render.yaml                Render blueprint for one-click multi-service deployment
+DEPLOYMENT.md              Detailed Render deployment instructions
+test_services.py           Automated test suite for backend endpoints and dashboard helpers
 results.json               Latest evaluation results
 sample_request.json        Example request body for the API
+requirements.txt           Pinned dependencies preserving training versions
 ```
 
 ## Setup
@@ -21,7 +25,7 @@ Use Python 3.11 or a compatible Python version. From the project folder:
 ```powershell
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
-pip install pandas numpy scikit-learn xgboost fastapi "uvicorn[standard]" joblib
+pip install -r requirements.txt
 ```
 
 If PowerShell prevents activation, run the following once for the current shell, then activate again:
@@ -139,6 +143,44 @@ Example response:
   "model": "XGBoost"
 }
 ```
+
+## Run the Streamlit dashboard
+
+With the FastAPI service running, launch the interactive dashboard in a separate terminal:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+streamlit run dashboard.py
+```
+
+- Open the dashboard at <http://localhost:8501>.
+- Load `sample_request.json`, upload custom transaction JSON files, or edit features directly in the web UI.
+- View real-time fraud risk scores, decision banners (Approved vs. Flagged for Review), and active model names.
+- By default, the dashboard connects to `http://127.0.0.1:8000`. You can configure this via the `API_URL` environment variable:
+  ```powershell
+  $env:API_URL = "http://127.0.0.1:8000"
+  streamlit run dashboard.py
+  ```
+
+## Automated testing
+
+Run local unit and integration tests covering the FastAPI endpoints, error validation, and Streamlit helpers:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+python test_services.py
+python test_live_services.py
+```
+
+## Deployment on Render
+
+This project is configured for deployment on [Render](https://render.com) using the included `render.yaml` blueprint:
+
+1. Push your changes to Git (ensure `models/fraud_model.joblib` is committed).
+2. Go to the [Render Dashboard](https://dashboard.render.com) > **New +** > **Blueprint**.
+3. Connect your repository. Render automatically provisions the FastAPI backend and Streamlit dashboard with the correct environment variables.
+
+For manual deployment steps and configuration details, see [DEPLOYMENT.md](file:///c:/Users/asus/OneDrive%20-%20Graphic%20Era%20University/Desktop/python/paymentFraudDetection/DEPLOYMENT.md).
 
 ## Limitations
 

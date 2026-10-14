@@ -5,7 +5,8 @@ __pycache__/
 
 # Local data and generated model artifacts
 data/creditcard.csv
-models/
+models/*
+!models/fraud_model.joblib
 
 # Editor and operating-system files
 .vscode/

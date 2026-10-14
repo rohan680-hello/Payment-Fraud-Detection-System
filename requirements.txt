@@ -1,7 +1,16 @@
-pandas
-numpy
-scikit-learn
-xgboost
-joblib
-fastapi
-uvicorn[standard]
+# Core data science and ML dependencies (preserving versions used during training)
+pandas==3.0.6
+numpy==2.4.6
+scipy==1.17.1
+scikit-learn==1.9.1
+xgboost==3.2.0
+joblib==1.6.0
+
+# Backend FastAPI service
+fastapi==0.143.0
+uvicorn[standard]==0.54.0
+pydantic==2.14.1
+
+# Frontend Streamlit dashboard and HTTP client
+requests==2.34.2
+streamlit==1.65.0

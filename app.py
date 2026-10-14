@@ -1,13 +1,22 @@
 import math
+from pathlib import Path
 
 import joblib
 import pandas as pd
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 
 # Load the saved model and configuration.
-artifact = joblib.load("models/fraud_model.joblib")
+MODEL_PATH = Path(__file__).resolve().parent / "models" / "fraud_model.joblib"
+if not MODEL_PATH.exists():
+    raise FileNotFoundError(
+        f"Model artifact not found at {MODEL_PATH}. "
+        "Ensure models/fraud_model.joblib exists and is included in deployment."
+    )
+
+artifact = joblib.load(MODEL_PATH)
 
 model = artifact["model"]
 feature_names = artifact["features"]
@@ -17,6 +26,14 @@ app = FastAPI(
     title="Payment Fraud Detection API",
     description="Score transactions and flag potential fraud for review.",
     version="1.0.0",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
